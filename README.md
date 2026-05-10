@@ -27,6 +27,12 @@ AW Enhanced Suite sits on top of the official ActivityWatch desktop app and adds
 - Lightweight local HTTP service
 - Cross-platform launch flow for Linux, macOS, and Windows
 
+## Demo
+
+Example generated daily report (sample data):
+
+![AW Enhanced Suite demo report](docs/images/report-demo.png)
+
 ## Platform Support
 
 | Platform | Status | Notes |
@@ -220,4 +226,3 @@ Useful variables:
 See:
 
 - `THIRD_PARTY_NOTICES.md`
-
