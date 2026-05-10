@@ -29,7 +29,15 @@ AW Enhanced Suite sits on top of the official ActivityWatch desktop app and adds
 
 ## Demo
 
-Example generated daily report (sample data):
+### Dashboard preview (sample / mock data)
+
+![AW Enhanced Suite dashboard preview](docs/images/dashboard-demo.png)
+
+### Animated product walkthrough
+
+![AW Enhanced Suite dashboard walkthrough](docs/images/dashboard-demo.gif)
+
+### Example generated daily report (sample data)
 
 ![AW Enhanced Suite demo report](docs/images/report-demo.png)
 
