@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=AW Enhanced Suite
+Comment=Start the enhanced dashboard that layers on top of ActivityWatch
+Exec=__REPO_ROOT__/scripts/autostart.sh
+Terminal=false
+X-GNOME-Autostart-enabled=true

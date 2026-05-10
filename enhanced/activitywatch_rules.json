@@ -1,0 +1,367 @@
+{
+  "browser_suffixes": [
+    " - Thorium",
+    " - Zen Twilight",
+    " - Firefox",
+    " - Google Chrome",
+    " - Chromium",
+    " - Brave",
+    " - Microsoft Edge"
+  ],
+  "terminal_apps": [
+    "Gnome-terminal",
+    "kitty",
+    "Alacritty",
+    "WezTerm",
+    "Konsole",
+    "xterm",
+    "Tilix"
+  ],
+  "browser_apps": [
+    "Thorium-browser",
+    "zen-twilight",
+    "Firefox",
+    "Chromium",
+    "Google-chrome",
+    "Brave-browser"
+  ],
+  "reader_apps": [
+    "calibre",
+    "E-book viewer",
+    "Zathura",
+    "Okular",
+    "Evince"
+  ],
+  "editor_apps": [
+    "Code",
+    "Cursor",
+    "Codium",
+    "VSCodium",
+    "Zed",
+    "Sublime Text",
+    "PyCharm",
+    "IntelliJ IDEA",
+    "WebStorm",
+    "GoLand",
+    "Neovim"
+  ],
+  "chat_apps": [
+    "Slack",
+    "Discord",
+    "TelegramDesktop",
+    "Zalo",
+    "Thunderbird"
+  ],
+  "media_apps": [
+    "mpv",
+    "VLC media player",
+    "Spotify",
+    "Celluloid"
+  ],
+  "system_apps": [
+    "cinnamon-settings",
+    "gnome-control-center",
+    "System Settings",
+    "Preferred Applications"
+  ],
+  "domain_rules": [
+    {
+      "category": "Learning",
+      "subcategory": "Course videos",
+      "color": "#2563eb",
+      "productive": true,
+      "deep_work": true,
+      "match": "all",
+      "domain_regex": [
+        "(^|\\.)youtube\\.com$",
+        "(^|\\.)youtu\\.be$"
+      ],
+      "title_regex": [
+        "course",
+        "tutorial",
+        "lesson",
+        "lecture",
+        "study",
+        "class",
+        "workshop"
+      ]
+    },
+    {
+      "category": "Communication",
+      "subcategory": "Mail and messaging",
+      "color": "#c2410c",
+      "productive": false,
+      "deep_work": false,
+      "domain_regex": [
+        "(^|\\.)gmail\\.com$",
+        "(^|\\.)googlemail\\.com$",
+        "(^|\\.)outlook\\.com$",
+        "(^|\\.)office\\.com$",
+        "(^|\\.)live\\.com$",
+        "(^|\\.)yahoo\\.com$",
+        "(^|\\.)proton\\.me$",
+        "(^|\\.)protonmail\\.com$",
+        "(^|\\.)telegram\\.org$",
+        "(^|\\.)discord\\.com$",
+        "(^|\\.)slack\\.com$",
+        "(^|\\.)whatsapp\\.com$",
+        "(^|\\.)messenger\\.com$",
+        "(^|\\.)teams\\.microsoft\\.com$",
+        "(^|\\.)zoom\\.us$"
+      ]
+    },
+    {
+      "category": "Learning",
+      "subcategory": "Reference and study",
+      "color": "#2e7d32",
+      "productive": true,
+      "deep_work": true,
+      "domain_regex": [
+        "(^|\\.)arxiv\\.org$",
+        "(^|\\.)wikipedia\\.org$",
+        "(^|\\.)docs\\.google\\.com$",
+        "(^|\\.)developer\\.mozilla\\.org$",
+        "(^|\\.)learn\\.microsoft\\.com$",
+        "(^|\\.)docs\\.python\\.org$",
+        "(^|\\.)readthedocs\\.io$",
+        "(^|\\.)coursera\\.org$",
+        "(^|\\.)udemy\\.com$",
+        "(^|\\.)edx\\.org$",
+        "(^|\\.)khanacademy\\.org$"
+      ]
+    },
+    {
+      "category": "Coding",
+      "subcategory": "Reference and tooling",
+      "color": "#0f766e",
+      "productive": true,
+      "deep_work": true,
+      "domain_regex": [
+        "(^|\\.)github\\.com$",
+        "(^|\\.)gitlab\\.com$",
+        "(^|\\.)bitbucket\\.org$",
+        "(^|\\.)stackoverflow\\.com$",
+        "(^|\\.)stackexchange\\.com$",
+        "(^|\\.)npmjs\\.com$",
+        "(^|\\.)pypi\\.org$",
+        "(^|\\.)pkg\\.go\\.dev$",
+        "(^|\\.)crates\\.io$",
+        "(^|\\.)docs\\.rs$",
+        "(^|\\.)codeberg\\.org$"
+      ]
+    },
+    {
+      "category": "Entertainment",
+      "subcategory": "Video and media",
+      "color": "#7c3aed",
+      "productive": false,
+      "deep_work": false,
+      "domain_regex": [
+        "(^|\\.)youtube\\.com$",
+        "(^|\\.)youtu\\.be$",
+        "(^|\\.)netflix\\.com$",
+        "(^|\\.)spotify\\.com$",
+        "(^|\\.)twitch\\.tv$",
+        "(^|\\.)soundcloud\\.com$",
+        "(^|\\.)vimeo\\.com$"
+      ]
+    },
+    {
+      "category": "Entertainment",
+      "subcategory": "Reading and browsing",
+      "color": "#7c3aed",
+      "productive": false,
+      "deep_work": false,
+      "domain_regex": [
+        "(^|\\.)reddit\\.com$",
+        "(^|\\.)x\\.com$",
+        "(^|\\.)twitter\\.com$",
+        "(^|\\.)facebook\\.com$",
+        "(^|\\.)instagram\\.com$",
+        "(^|\\.)tiktok\\.com$",
+        "(^|\\.)luottruyen5\\.com$",
+        "(^|\\.)vnexpress\\.net$",
+        "(^|\\.)kenh14\\.vn$"
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "category": "Learning",
+      "subcategory": "Reading and ebooks",
+      "color": "#2e7d32",
+      "productive": true,
+      "deep_work": true,
+      "app_regex": [
+        "calibre",
+        "E-book viewer",
+        "okular",
+        "zathura",
+        "evince"
+      ]
+    },
+    {
+      "category": "Learning",
+      "subcategory": "Notes and knowledge base",
+      "color": "#2e7d32",
+      "productive": true,
+      "deep_work": true,
+      "app_regex": [
+        "obsidian",
+        "logseq",
+        "notion",
+        "joplin"
+      ]
+    },
+    {
+      "category": "Learning",
+      "subcategory": "Research and AI",
+      "color": "#2e7d32",
+      "productive": true,
+      "deep_work": true,
+      "title_regex": [
+        "grok",
+        "chatgpt",
+        "claude",
+        "gemini",
+        "perplexity",
+        "arxiv",
+        "research",
+        "paper",
+        "study",
+        "learning",
+        "spaced repetition",
+        "course",
+        "tutorial",
+        "lesson",
+        "lecture",
+        "documentation",
+        "\\bdocs?\\b",
+        "\\bguide\\b"
+      ]
+    },
+    {
+      "category": "Learning",
+      "subcategory": "Flashcards",
+      "color": "#2e7d32",
+      "productive": true,
+      "deep_work": true,
+      "app_regex": [
+        "anki"
+      ]
+    },
+    {
+      "category": "Learning",
+      "subcategory": "Course videos",
+      "color": "#2563eb",
+      "productive": true,
+      "deep_work": true,
+      "title_regex": [
+        "youtube.*(course|tutorial|lesson|lecture|study)",
+        "udemy",
+        "coursera",
+        "edx",
+        "khan academy"
+      ]
+    },
+    {
+      "category": "Coding",
+      "subcategory": "Code editor",
+      "color": "#0f766e",
+      "productive": true,
+      "deep_work": true,
+      "app_regex": [
+        "code",
+        "cursor",
+        "codium",
+        "zed",
+        "sublime",
+        "pycharm",
+        "idea",
+        "webstorm",
+        "goland",
+        "nvim",
+        "vim"
+      ]
+    },
+    {
+      "category": "Coding",
+      "subcategory": "Terminal",
+      "color": "#0f766e",
+      "productive": true,
+      "deep_work": true,
+      "app_regex": [
+        "terminal",
+        "kitty",
+        "wezterm",
+        "alacritty",
+        "konsole",
+        "xterm",
+        "tilix"
+      ]
+    },
+    {
+      "category": "Communication",
+      "subcategory": "Chat and messaging",
+      "color": "#c2410c",
+      "productive": false,
+      "deep_work": false,
+      "title_regex": [
+        "messenger",
+        "discord",
+        "telegram",
+        "zalo",
+        "slack",
+        "gmail",
+        "inbox",
+        "\\bmail\\b"
+      ],
+      "app_regex": [
+        "slack",
+        "discord",
+        "telegram",
+        "thunderbird"
+      ]
+    },
+    {
+      "category": "Entertainment",
+      "subcategory": "Video and media",
+      "color": "#7c3aed",
+      "productive": false,
+      "deep_work": false,
+      "title_regex": [
+        "youtube",
+        "netflix",
+        "spotify",
+        "music",
+        "video"
+      ],
+      "app_regex": [
+        "mpv",
+        "vlc",
+        "spotify",
+        "celluloid"
+      ]
+    },
+    {
+      "category": "Admin",
+      "subcategory": "Monitoring and settings",
+      "color": "#475569",
+      "productive": false,
+      "deep_work": false,
+      "title_regex": [
+        "activitywatch",
+        "preferred applications",
+        "settings"
+      ],
+      "app_regex": [
+        "aw-qt",
+        "cinnamon-settings",
+        "gnome-control-center",
+        "xdg-desktop-portal-gtk",
+        "xdg-desktop-portal-kde",
+        "^unknown$"
+      ]
+    }
+  ]
+}

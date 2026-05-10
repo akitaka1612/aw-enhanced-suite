@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ActivityWatch Usage Dashboard</title>
+  <link rel="stylesheet" href="/vendor/tabler/tabler.min.css">
+  <style>
+    :root {
+      --aw-border: rgba(98, 105, 118, .16);
+    }
+    body {
+      background: #f6f8fb;
+    }
+    .aw-shell {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top right, rgba(32, 107, 196, .08), transparent 24rem),
+        radial-gradient(circle at top left, rgba(12, 166, 120, .08), transparent 22rem);
+    }
+    .aw-brand {
+      letter-spacing: -.03em;
+    }
+    .aw-panel {
+      border: 1px solid var(--aw-border);
+      box-shadow: 0 10px 30px rgba(15, 23, 42, .04);
+    }
+    .aw-kpi {
+      min-height: 140px;
+    }
+    .aw-heatmap {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: .75rem;
+    }
+    .aw-heat-cell {
+      border: 1px solid var(--aw-border);
+      border-radius: var(--tblr-border-radius-lg);
+      background: #fff;
+      padding: .75rem;
+    }
+    .aw-heat-bar-wrap {
+      height: 72px;
+      display: flex;
+      align-items: flex-end;
+      margin: .5rem 0;
+    }
+    .aw-heat-bar {
+      width: 100%;
+      min-height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(32, 107, 196, .32), rgba(12, 166, 120, .9));
+      transform-origin: bottom;
+    }
+    .aw-session-list,
+    .aw-focus-list,
+    .aw-plain-list,
+    .aw-compare-list {
+      display: grid;
+      gap: .75rem;
+    }
+    .aw-item {
+      border: 1px solid var(--aw-border);
+      border-radius: var(--tblr-border-radius-lg);
+      background: #fff;
+      padding: 1rem;
+    }
+    .aw-session-grid {
+      display: grid;
+      gap: .5rem;
+    }
+    .aw-badge-dot {
+      width: .625rem;
+      height: .625rem;
+      border-radius: 999px;
+      display: inline-block;
+      margin-right: .5rem;
+      flex: none;
+    }
+    .aw-progress-slim {
+      height: .5rem;
+    }
+    .aw-empty {
+      border: 1px dashed var(--aw-border);
+      border-radius: var(--tblr-border-radius-lg);
+      background: rgba(255,255,255,.75);
+      padding: 1rem;
+      color: var(--tblr-secondary);
+    }
+    .aw-sticky-tools {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(10px);
+      background: rgba(246, 248, 251, .88);
+      border-bottom: 1px solid rgba(98, 105, 118, .08);
+    }
+    .aw-toolbar {
+      flex-wrap: wrap;
+    }
+    .aw-link-card {
+      border: 1px solid var(--aw-border);
+      border-radius: var(--tblr-border-radius-lg);
+      background: linear-gradient(135deg, rgba(32, 107, 196, .06), rgba(12, 166, 120, .06));
+      padding: 1rem 1.25rem;
+    }
+    .aw-banner {
+      border-radius: var(--tblr-border-radius-lg);
+      border: 1px solid transparent;
+    }
+    .aw-banner-actions {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+      margin-top: .75rem;
+    }
+    @media (max-width: 1200px) {
+      .aw-heatmap {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 768px) {
+      .aw-heatmap {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page aw-shell">
+    <header class="navbar navbar-expand-md d-print-none aw-sticky-tools">
+      <div class="container-xl">
+        <div class="navbar-brand navbar-brand-autodark pe-0">
+          <span class="fw-bold fs-2 aw-brand">ActivityWatch Usage Dashboard</span>
+        </div>
+        <div class="ms-auto d-flex align-items-center gap-2 aw-toolbar">
+          <input id="datePicker" class="form-control" type="date" style="max-width: 11rem;">
+          <button id="refreshBtn" class="btn btn-primary">Refresh</button>
+          <button id="reportBtn" class="btn btn-outline-primary">Generate PNG report</button>
+          <a class="btn btn-outline-secondary" href="http://127.0.0.1:5600" target="_blank" rel="noreferrer">Original AW</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="page-wrapper">
+      <div class="page-header d-print-none">
+        <div class="container-xl">
+          <div class="row g-3 align-items-end">
+            <div class="col">
+              <div class="page-pretitle">ActivityWatch + Tabler</div>
+              <h2 class="page-title">Daily machine-usage analysis</h2>
+              <div class="text-secondary mt-2">
+                A local analytics layer on top of ActivityWatch with clearer categorization,
+                session review, and day-over-day performance comparison.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-body">
+        <div class="container-xl">
+          <div id="statusBanner" class="alert aw-banner d-none" role="alert"></div>
+
+          <div class="aw-link-card mb-3">
+            <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+              <div>
+                <div class="fw-semibold">Linked to the original ActivityWatch Web UI</div>
+                <div class="text-secondary mt-1">
+                  This dashboard reads the same live ActivityWatch buckets as the original Web UI on port 5600,
+                  then enriches browser sessions with browser-watcher URL and tab data.
+                </div>
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <a class="btn btn-outline-secondary" href="http://127.0.0.1:5600" target="_blank" rel="noreferrer">Open original AW</a>
+                <a id="latestPngLink" class="btn btn-outline-primary d-none" href="#" target="_blank" rel="noreferrer">Open latest PNG</a>
+                <a id="latestMdLink" class="btn btn-outline-secondary d-none" href="#" target="_blank" rel="noreferrer">Open latest Markdown</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="row row-deck row-cards" id="stats"></div>
+
+          <div class="row row-cards mt-1">
+            <div class="col-12 col-xl-8">
+              <div class="card aw-panel">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title">Category breakdown</h3>
+                    <div class="text-secondary">Where time went, grouped into categories and subcategories.</div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div id="categories"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-xl-4">
+              <div class="card aw-panel">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title">Cross-day performance</h3>
+                    <div class="text-secondary">Selected day vs previous day and 7-day baseline.</div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div id="compareCards" class="aw-compare-list"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row row-cards mt-1">
+            <div class="col-12 col-xl-7">
+              <div class="card aw-panel">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title">Hourly activity map</h3>
+                    <div class="text-secondary">A compact view of active time by hour.</div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div id="heatmap" class="aw-heatmap"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-xl-5">
+              <div class="card aw-panel">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title">7-day trend</h3>
+                    <div class="text-secondary">Active time, deep work, and top category across days.</div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div id="dailyTrend" class="aw-plain-list"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row row-cards mt-1">
+            <div class="col-12 col-xl-3">
+              <div class="card aw-panel">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title">Top apps</h3>
+                    <div class="text-secondary">Most time-consuming applications for the selected day.</div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div id="topApps" class="aw-plain-list"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-xl-3">
+              <div class="card aw-panel">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title">Top domains</h3>
+                    <div class="text-secondary">Most time-consuming sites from the browser watcher.</div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div id="topDomains" class="aw-plain-list"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-xl-3">
+              <div class="card aw-panel">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title">Top activities</h3>
+                    <div class="text-secondary">Most time-consuming tabs, windows, or activity buckets.</div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div id="topActivities" class="aw-plain-list"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-xl-3">
+              <div class="card aw-panel">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title">Long focus blocks</h3>
+                    <div class="text-secondary">Longer productive sessions, ranked by duration.</div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div id="focusBlocks" class="aw-focus-list"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row row-cards mt-1">
+            <div class="col-12">
+              <div class="card aw-panel">
+                <div class="card-header">
+                  <div>
+                    <h3 class="card-title">Recent sessions</h3>
+                    <div class="text-secondary">A session-level log for quick review of what you did during the day.</div>
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-vcenter">
+                    <thead>
+                      <tr>
+                        <th>Time</th>
+                        <th>Category</th>
+                        <th>Activity</th>
+                        <th>App</th>
+                        <th class="text-end">Duration</th>
+                      </tr>
+                    </thead>
+                    <tbody id="sessions"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/tabler/tabler.min.js"></script>
+  <script>
+    const state = {
+      date: new Date().toISOString().slice(0, 10),
+    };
+
+    const statsEl = document.getElementById("stats");
+    const categoriesEl = document.getElementById("categories");
+    const compareCardsEl = document.getElementById("compareCards");
+    const heatmapEl = document.getElementById("heatmap");
+    const dailyTrendEl = document.getElementById("dailyTrend");
+    const topAppsEl = document.getElementById("topApps");
+    const topDomainsEl = document.getElementById("topDomains");
+    const topActivitiesEl = document.getElementById("topActivities");
+    const focusBlocksEl = document.getElementById("focusBlocks");
+    const sessionsEl = document.getElementById("sessions");
+    const datePicker = document.getElementById("datePicker");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const reportBtn = document.getElementById("reportBtn");
+    const statusBanner = document.getElementById("statusBanner");
+    const latestPngLink = document.getElementById("latestPngLink");
+    const latestMdLink = document.getElementById("latestMdLink");
+
+    datePicker.value = state.date;
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function fmtDuration(seconds) {
+      const total = Math.round(seconds);
+      const hours = Math.floor(total / 3600);
+      const minutes = Math.floor((total % 3600) / 60);
+      const secs = total % 60;
+      const parts = [];
+      if (hours) parts.push(`${hours}h`);
+      if (minutes) parts.push(`${minutes}m`);
+      if (secs && !hours) parts.push(`${secs}s`);
+      return parts.join(" ") || "0m";
+    }
+
+    function fmtDelta(seconds) {
+      return `${seconds >= 0 ? "+" : "-"}${fmtDuration(Math.abs(seconds))}`;
+    }
+
+    function showBanner(kind, message, actions = []) {
+      const classMap = {
+        info: "alert-info",
+        success: "alert-success",
+        danger: "alert-danger",
+      };
+      statusBanner.className = `alert aw-banner ${classMap[kind] || classMap.info}`;
+      statusBanner.innerHTML = `
+        <div>${message}</div>
+        ${actions.length ? `<div class="aw-banner-actions">${actions.join("")}</div>` : ""}
+      `;
+    }
+
+    function setLatestLinks(payload) {
+      if (payload.image_url) {
+        latestPngLink.href = payload.image_url;
+        latestPngLink.classList.remove("d-none");
+      }
+      if (payload.markdown_url) {
+        latestMdLink.href = payload.markdown_url;
+        latestMdLink.classList.remove("d-none");
+      }
+    }
+
+    function badgeForCategory(item) {
+      return `
+        <span class="badge bg-white-lt text-secondary border">
+          <span class="aw-badge-dot" style="background:${item.color}"></span>
+          ${escapeHtml(item.category || item.name)}
+        </span>
+      `;
+    }
+
+    function renderStats(summary) {
+      const cards = [
+        ["Total active time", summary.total_label, `Selected date: ${summary.date}`],
+        ["Deep work", summary.deep_work_label, `${summary.focus_ratio}% focus ratio`],
+        ["Longest session", summary.longest_session_label, `${summary.context_switches} context switches`],
+        ["Productive time", summary.productive_label, `${summary.categories.length} category groups`]
+      ];
+      statsEl.innerHTML = cards.map(([title, value, sub]) => `
+        <div class="col-sm-6 col-xl-3">
+          <div class="card aw-panel aw-kpi">
+            <div class="card-body">
+              <div class="text-secondary text-uppercase fs-5 fw-semibold mb-2">${escapeHtml(title)}</div>
+              <div class="display-6 fw-bold">${escapeHtml(value)}</div>
+              <div class="text-secondary mt-2">${escapeHtml(sub)}</div>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderCategories(summary) {
+      if (!summary.categories.length) {
+        categoriesEl.innerHTML = `<div class="aw-empty">No activity data available for this day.</div>`;
+        return;
+      }
+
+      categoriesEl.innerHTML = summary.categories.map(item => `
+        <div class="mb-4">
+          <div class="d-flex justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+              <span class="aw-badge-dot" style="background:${item.color}"></span>
+              <div class="fw-semibold">${escapeHtml(item.name)}</div>
+            </div>
+            <div class="text-secondary">${item.percent}%</div>
+          </div>
+          <div class="progress progress-sm aw-progress-slim mt-2">
+            <div class="progress-bar" style="width:${item.percent}%; background:${item.color};"></div>
+          </div>
+          <div class="d-flex justify-content-between mt-2">
+            <div class="text-secondary">${item.subcategories.slice(0, 3).map(sub => `${sub.name}: ${sub.label}`).join(" · ")}</div>
+            <div class="fw-semibold">${escapeHtml(item.label)}</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderComparison(compare) {
+      const prev = compare.vs_previous;
+      const avg = compare.vs_average;
+      compareCardsEl.innerHTML = `
+        <div class="aw-item">
+          <div class="text-secondary text-uppercase fs-5 fw-semibold">Vs previous day</div>
+          <div class="mt-2 fw-semibold">${escapeHtml(prev.previous_date || "n/a")}</div>
+          <div class="text-secondary mt-2">Active ${fmtDelta(prev.active_delta_seconds)} · Deep work ${fmtDelta(prev.deep_work_delta_seconds)} · Focus ${prev.focus_ratio_delta >= 0 ? "+" : ""}${prev.focus_ratio_delta}pt</div>
+        </div>
+        <div class="aw-item">
+          <div class="text-secondary text-uppercase fs-5 fw-semibold">Vs 7-day average</div>
+          <div class="mt-2 fw-semibold">Baseline active ${escapeHtml(avg.average_active_label)}</div>
+          <div class="text-secondary mt-2">Active ${fmtDelta(avg.active_delta_seconds)} · Deep work ${fmtDelta(avg.deep_work_delta_seconds)} · Focus ${avg.focus_ratio_delta >= 0 ? "+" : ""}${avg.focus_ratio_delta}pt</div>
+        </div>
+      `;
+
+      dailyTrendEl.innerHTML = compare.daily.map(item => `
+        <div class="aw-item">
+          <div class="d-flex justify-content-between gap-2 flex-wrap">
+            <div class="fw-semibold">${escapeHtml(item.date)}</div>
+            <span class="badge bg-azure-lt">${escapeHtml(item.top_category)}</span>
+          </div>
+          <div class="text-secondary mt-2">Active ${escapeHtml(item.total_label)} · Deep work ${escapeHtml(item.deep_work_label)} · Focus ${item.focus_ratio}% · ${item.context_switches} switches</div>
+        </div>
+      `).join("");
+    }
+
+    function renderHeatmap(summary) {
+      const max = Math.max(...summary.hours.map(item => item.seconds), 1);
+      heatmapEl.innerHTML = summary.hours.map(item => {
+        const ratio = item.seconds / max;
+        const scale = Math.max(ratio, 0.08);
+        return `
+          <div class="aw-heat-cell">
+            <div class="fw-semibold">${String(item.hour).padStart(2, "0")}:00</div>
+            <div class="aw-heat-bar-wrap">
+              <div class="aw-heat-bar" style="transform: scaleY(${scale}); opacity:${0.2 + ratio * 0.8};"></div>
+            </div>
+            <div class="text-secondary">${fmtDuration(item.seconds)}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderPlainList(container, items, emptyText) {
+      if (!items.length) {
+        container.innerHTML = `<div class="aw-empty">${escapeHtml(emptyText)}</div>`;
+        return;
+      }
+      container.innerHTML = items.map(item => `
+        <div class="aw-item">
+          <div class="fw-semibold">${escapeHtml(item.name)}</div>
+          <div class="text-secondary mt-1">${escapeHtml(item.label)}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderFocusBlocks(summary) {
+      if (!summary.focus_blocks.length) {
+        focusBlocksEl.innerHTML = `<div class="aw-empty">No productive session longer than 15 minutes yet.</div>`;
+        return;
+      }
+      focusBlocksEl.innerHTML = summary.focus_blocks.map(item => `
+        <div class="aw-item">
+          <div class="d-flex justify-content-between gap-2 flex-wrap">
+            <span class="badge bg-white-lt text-secondary border">
+              <span class="aw-badge-dot" style="background:${item.color}"></span>
+              ${escapeHtml(item.category)} / ${escapeHtml(item.subcategory)}
+            </span>
+            <div class="fw-semibold">${escapeHtml(item.label)}</div>
+          </div>
+          <div class="mt-2 fw-semibold">${escapeHtml(item.activity)}</div>
+          <div class="text-secondary mt-1">${escapeHtml(item.start)} - ${escapeHtml(item.end)}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderSessions(summary) {
+      if (!summary.sessions.length) {
+        sessionsEl.innerHTML = `<tr><td colspan="5"><div class="aw-empty">No session data available.</div></td></tr>`;
+        return;
+      }
+      sessionsEl.innerHTML = summary.sessions.map(item => `
+        <tr>
+          <td class="text-nowrap">${escapeHtml(item.start)} - ${escapeHtml(item.end)}</td>
+          <td>
+            <span class="badge bg-white-lt text-secondary border">
+              <span class="aw-badge-dot" style="background:${item.color}"></span>
+              ${escapeHtml(item.category)} / ${escapeHtml(item.subcategory)}
+            </span>
+          </td>
+          <td>
+            <div class="text-secondary">${escapeHtml(item.activity)}</div>
+            <div class="small text-muted">${escapeHtml(item.detail || "")}</div>
+          </td>
+          <td>${escapeHtml(item.app)}</td>
+          <td class="text-end fw-semibold">${escapeHtml(item.label)}</td>
+        </tr>
+      `).join("");
+    }
+
+    async function loadDashboard() {
+      refreshBtn.disabled = true;
+      try {
+        const [summaryRes, compareRes] = await Promise.all([
+          fetch(`/api/day?date=${encodeURIComponent(state.date)}`),
+          fetch(`/api/compare?date=${encodeURIComponent(state.date)}&days=7`)
+        ]);
+        if (!summaryRes.ok || !compareRes.ok) {
+          throw new Error("Failed to load dashboard data.");
+        }
+        const summary = await summaryRes.json();
+        const compare = await compareRes.json();
+        renderStats(summary);
+        renderCategories(summary);
+        renderComparison(compare);
+        renderHeatmap(summary);
+        renderPlainList(topAppsEl, summary.top_apps, "No app data available.");
+        renderPlainList(topDomainsEl, summary.top_domains, "No browser-domain data available yet.");
+        renderPlainList(topActivitiesEl, summary.top_activities, "No activity data available.");
+        renderFocusBlocks(summary);
+        renderSessions(summary);
+        showBanner("info", "Live data loaded from ActivityWatch + browser watcher buckets.");
+      } catch (error) {
+        showBanner("danger", escapeHtml(error.message || "Failed to load dashboard data."));
+      } finally {
+        refreshBtn.disabled = false;
+      }
+    }
+
+    async function generateReport() {
+      reportBtn.disabled = true;
+      try {
+        const response = await fetch(`/api/report-image?date=${encodeURIComponent(state.date)}`);
+        if (!response.ok) {
+          throw new Error("Failed to generate the report image.");
+        }
+        const payload = await response.json();
+        let copied = false;
+        if (navigator.clipboard?.writeText) {
+          try {
+            await navigator.clipboard.writeText(payload.copy_ready);
+            copied = true;
+          } catch (error) {
+            copied = false;
+          }
+        }
+        setLatestLinks(payload);
+        showBanner(
+          "success",
+          `Saved the PNG report for ${escapeHtml(payload.date)} and refreshed the markdown report.${copied ? " The short summary was copied to your clipboard." : ""}`,
+          [
+            `<a class="btn btn-success btn-sm" href="${escapeHtml(payload.image_url)}" target="_blank" rel="noreferrer">Open PNG</a>`,
+            `<a class="btn btn-outline-success btn-sm" href="${escapeHtml(payload.markdown_url)}" target="_blank" rel="noreferrer">Open Markdown</a>`
+          ]
+        );
+      } catch (error) {
+        showBanner("danger", escapeHtml(error.message || "Failed to generate the report image."));
+      } finally {
+        reportBtn.disabled = false;
+      }
+    }
+
+    refreshBtn.addEventListener("click", loadDashboard);
+    reportBtn.addEventListener("click", generateReport);
+    datePicker.addEventListener("change", () => {
+      state.date = datePicker.value;
+      loadDashboard();
+    });
+
+    loadDashboard();
+  </script>
+</body>
+</html>

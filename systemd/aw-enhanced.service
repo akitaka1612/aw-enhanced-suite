@@ -1,0 +1,12 @@
+[Unit]
+Description=AW Enhanced Suite
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=__REPO_ROOT__
+ExecStart=__REPO_ROOT__/scripts/start-enhanced.sh
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
