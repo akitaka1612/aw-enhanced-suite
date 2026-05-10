@@ -1,160 +1,223 @@
 # AW Enhanced Suite
 
-Một lớp mở rộng chạy **trên ActivityWatch gốc** để có:
+A polished local analytics layer for **ActivityWatch** with a cleaner dashboard, richer categorization, and one-click daily report generation.
 
-- dashboard đẹp hơn, dễ đọc hơn
-- phân loại hoạt động theo category/subcategory
-- so sánh ngày hiện tại với ngày trước và baseline 7 ngày
-- generate **ảnh báo cáo PNG hằng ngày**
-- generate **Markdown report**
-- hỗ trợ tận dụng dữ liệu browser watcher nếu có cài extension
+## Overview
 
-> Repo này **không fork / không bundle mã nguồn ActivityWatch gốc**.  
-> Trên **Linux**, script có thể tải bản chính thức của ActivityWatch.  
-> Trên **macOS / Windows**, nên cài ActivityWatch chính thức trước rồi mới chạy lớp enhanced này.
+AW Enhanced Suite sits on top of the official ActivityWatch desktop app and adds:
 
-## 1) Tình trạng hỗ trợ nền tảng
+- a clearer, more readable dashboard
+- custom activity categorization by category and subcategory
+- daily comparison against the previous day and recent baseline
+- **PNG daily reports**
+- **Markdown daily reports**
+- better browser activity summaries when `aw-watcher-web` is available
 
-- **Linux**: hỗ trợ tốt nhất, có thể cài gần như 1 lệnh
-- **macOS**: dùng được, nhưng nên cài app ActivityWatch chính thức (`.dmg`) trước
-- **Windows**: dùng được, nhưng nên cài ActivityWatch chính thức (`.exe installer`) trước
+> This repository is an enhancement layer, **not a fork of ActivityWatch itself**.  
+> On **Linux**, the installer can fetch the official ActivityWatch bundle automatically.  
+> On **macOS** and **Windows**, users should install the official ActivityWatch app first.
 
-Enhanced dashboard/report layer là Python + HTTP local nên bản thân nó khá portable; phần khác biệt chủ yếu nằm ở **cách cài/chạy ActivityWatch base app** và **autostart**.
+## Features
 
-## 2) Quick start cho bạn bè
+- Enhanced local dashboard on top of ActivityWatch data
+- Daily usage summary with productivity and focus metrics
+- Category / subcategory breakdown
+- Domain-aware browser activity classification
+- Exportable Markdown and PNG reports
+- Lightweight local HTTP service
+- Cross-platform launch flow for Linux, macOS, and Windows
+
+## Platform Support
+
+| Platform | Status | Notes |
+|---|---|---|
+| Linux | Recommended | Best-supported path; installer can download ActivityWatch automatically |
+| macOS | Supported | Install the official ActivityWatch `.dmg` first |
+| Windows | Supported | Install the official ActivityWatch `.exe` first |
+
+## Architecture
+
+This project works as a local layer above the official ActivityWatch app:
+
+1. **ActivityWatch base app** collects activity data and serves it on `http://127.0.0.1:5600`
+2. **AW Enhanced Suite** reads that live data, enriches it, and serves an enhanced dashboard
+3. Reports are generated locally as **Markdown** and **PNG**
+
+Default enhanced dashboard address:
+
+```text
+http://127.0.0.1:8712
+```
+
+## Quick Start
 
 ### Linux
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/akitaka1612/aw-enhanced-suite.git
 cd aw-enhanced-suite
 ./scripts/install.sh
 ./scripts/open-dashboard.sh
 ```
 
-### macOS
-
-1. Cài ActivityWatch chính thức từ GitHub releases  
-2. Mở app ActivityWatch ít nhất 1 lần để nó chạy ở `localhost:5600`
-3. Chạy:
-
-```bash
-git clone <repo-url>
-cd aw-enhanced-suite
-python3 scripts/install.py --skip-base
-python3 scripts/open-dashboard.py
-```
-
-### Windows
-
-1. Cài ActivityWatch chính thức từ GitHub releases  
-2. Mở app ActivityWatch ít nhất 1 lần
-3. Mở PowerShell hoặc CMD:
-
-```powershell
-git clone <repo-url>
-cd aw-enhanced-suite
-py -3 scripts\install.py --skip-base
-py -3 scripts\open-dashboard.py
-```
-
-Generate ảnh báo cáo:
+Generate a report:
 
 ```bash
 ./scripts/generate-report.sh
 ```
 
-Windows:
+Optional Linux shortcuts installed by the setup script:
+
+```bash
+awx-dashboard
+awx-report
+awx-start
+```
+
+### macOS
+
+1. Install the official ActivityWatch app from GitHub releases
+2. Open ActivityWatch at least once
+3. Run:
+
+```bash
+git clone https://github.com/akitaka1612/aw-enhanced-suite.git
+cd aw-enhanced-suite
+python3 scripts/install.py --skip-base
+python3 scripts/open-dashboard.py
+```
+
+Generate a report:
+
+```bash
+python3 scripts/generate-report.py
+```
+
+### Windows
+
+1. Install the official ActivityWatch app from GitHub releases
+2. Launch ActivityWatch at least once
+3. In PowerShell or Command Prompt:
+
+```powershell
+git clone https://github.com/akitaka1612/aw-enhanced-suite.git
+cd aw-enhanced-suite
+py -3 scripts\install.py --skip-base
+py -3 scripts\open-dashboard.py
+```
+
+Generate a report:
 
 ```powershell
 py -3 scripts\generate-report.py
 ```
 
-Sau khi cài xong trên Linux có thể gọi nhanh bằng:
+## Repository Structure
 
-```bash
-awx-dashboard
-awx-report
+```text
+enhanced/      Core Python logic, HTTP server, UI assets, rules
+scripts/       Installers, launchers, report commands
+autostart/     Desktop autostart templates
+systemd/       Example systemd unit
 ```
 
-## 3) Cấu trúc repo
+Key files:
 
-- `enhanced/`: mã Python + HTML của dashboard nâng cao
-- `scripts/install.py`: installer cross-platform cho lớp enhanced
-- `scripts/install-base-activitywatch.sh`: tải bản Linux mới nhất của ActivityWatch từ GitHub release chính thức
-- `scripts/open-dashboard.py`: đảm bảo base + enhanced đã chạy rồi mở giao diện
-- `scripts/generate-report.py`: tạo file `.md` và `.png`
-- `autostart/`, `systemd/`: template nếu muốn cài tự khởi động
+- `enhanced/core.py` — summarization, categorization, reporting
+- `enhanced/server.py` — local HTTP server for the enhanced dashboard
+- `enhanced/runtime.py` — cross-platform runtime helpers
+- `scripts/install.py` — cross-platform installer for the enhanced layer
+- `scripts/install-base-activitywatch.sh` — Linux-only installer for official ActivityWatch
+- `scripts/open-dashboard.py` — starts dependencies and opens the dashboard
+- `scripts/generate-report.py` — creates Markdown + PNG reports
 
-## 4) Yêu cầu môi trường
+## Requirements
 
-Yêu cầu chung:
+### Common
 
-- Python 3.10+
 - Git
-- ActivityWatch base app
+- Python 3.10+
+- Official ActivityWatch base app
 
-Khuyến nghị theo nền tảng:
+### Platform-specific
 
-- Linux: `curl`, `xclip` hoặc `wl-copy`, desktop session có tray
-- macOS: `pbcopy` có sẵn
-- Windows: `clip.exe` có sẵn, `py -3` hoặc Python launcher
+- **Linux:** `curl`, plus one clipboard tool such as `xclip`, `wl-copy`, or `xsel`
+- **macOS:** `pbcopy` is used when available
+- **Windows:** `clip.exe` is used when available
 
-Lưu ý cho ActivityWatch base app:
+## Output and Storage
 
-- Linux: docs chính thức nói tải **Linux `.zip`** rồi chạy `aw-qt`
-- macOS: docs chính thức nói tải **`.dmg`** rồi kéo app vào Applications
-- Windows: docs chính thức nói chạy **`.exe installer`**
+By default:
 
-## 5) Dữ liệu được lưu ở đâu?
+- ActivityWatch data stays in the normal ActivityWatch data directory
+- Linux ActivityWatch bundle installs to:
 
-- Dữ liệu ActivityWatch gốc: thường ở `~/.local/share/activitywatch`
-- Binary ActivityWatch: mặc định cài vào `~/.local/opt/activitywatch`
-- Ảnh + markdown report: mặc định ở `~/ActivityWatchReports`
+```text
+~/.local/opt/activitywatch
+```
 
-## 6) Browser watcher (optional nhưng nên có)
+- Generated reports are written to:
 
-Nếu cài browser extension `aw-watcher-web`, dashboard sẽ hiển thị domain/title tốt hơn.
+```text
+~/ActivityWatchReports
+```
 
-Nếu không cài extension thì dashboard vẫn chạy, chỉ là phần website/domain sẽ kém chi tiết hơn.
+## Browser Watcher
 
-## 7) Tự khởi động cùng máy
+For richer web activity summaries, install the official `aw-watcher-web` browser extension.
+
+Without the extension, the dashboard still works, but browser-related domain and tab-level reporting will be less detailed.
+
+## Autostart
+
+### Linux
 
 ```bash
 ./scripts/install.sh --autostart
 ```
 
-Lệnh này hiện chủ yếu dành cho **Linux/XDG autostart**.
+This installs an XDG autostart entry under `~/.config/autostart/`.
 
-Trên macOS hãy thêm app/script vào **Login Items**.  
-Trên Windows hãy thêm shortcut/script vào **Startup** hoặc Task Scheduler.
+### macOS
 
-## 8) Tuỳ biến
+Add ActivityWatch and/or the launcher script to **Login Items**.
 
-Bạn có thể copy `.env.example` thành `.env` rồi sửa các biến như:
+### Windows
+
+Add the launcher to **Startup** or create a **Task Scheduler** entry.
+
+## Configuration
+
+Copy `.env.example` to `.env` and adjust values if needed:
+
+```bash
+cp .env.example .env
+```
+
+Useful variables:
 
 - `AW_INSTALL_DIR`
 - `AW_BASE_URL`
+- `AW_ENHANCED_HOST`
 - `AW_ENHANCED_PORT`
 - `AW_REPORTS_DIR`
 - `AW_MACOS_APP`
 - `AW_WINDOWS_EXE`
 
-## 9) Push lên GitHub
+## Notes
 
-Nếu đây là repo local mới:
+- The enhanced dashboard reads **live local data** from the base ActivityWatch service on port `5600`
+- The enhanced dashboard serves its UI on port `8712` by default
+- Everything runs locally; this project does **not** upload user activity data anywhere
 
-```bash
-git init
-git add .
-git commit -m "Initial AW enhanced suite"
-git branch -M main
-git remote add origin <github-repo-url>
-git push -u origin main
-```
+## Related Links
 
-## 10) Ghi chú quan trọng
+- ActivityWatch documentation: https://docs.activitywatch.net/en/latest/getting-started.html
+- ActivityWatch releases: https://github.com/ActivityWatch/activitywatch/releases
 
-- Dashboard enhanced đọc dữ liệu **live** từ ActivityWatch gốc trên port `5600`.
-- Port mặc định của dashboard enhanced là `8712`.
-- Đây là lớp mở rộng local-first, không upload dữ liệu đi đâu cả.
+## License and Third-Party Components
+
+See:
+
+- `THIRD_PARTY_NOTICES.md`
+
